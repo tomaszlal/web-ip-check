@@ -1,90 +1,104 @@
 package ma.cu.lalewicz.webipcheck.model;
 
-import org.springframework.context.annotation.Bean;
+import ma.cu.lalewicz.webipcheck.utils.IpUtil;
+
 
 
 public class IpAddress {
-    private int ipInBits;
-    private String ipInString;
+    private int ipBit;
+    private int maskBit;
+    private int netAddressBit;
+    private int broadcastAddressBit;
+    private String ip;
     private String mask;
     private String netAddress;
     private String broadcastAddress;
     private String firstAddress;
     private String lastAddress;
+    private String numberOfAddresses;
+    private boolean validIp;
 
-
-    public String getIpInString() {
-        return ipInString;
+    public IpAddress() {
     }
 
-    public void setIpInString(String ipInString) {
-        this.ipInString = ipInString;
-        this.ipInBits = ipToBits(ipInString);
+    public IpAddress(boolean validIp) {
+        this.validIp = validIp;
     }
+
+    public IpAddress(String ip, String mask) {
+        this.ip = ip;
+        this.ipBit = IpUtil.ipToBits(ip);
+        this.maskBit = IpUtil.maskaSieciowaBin(Integer.parseInt(mask));
+        this.mask = IpUtil.ipToString(maskBit);
+        this.netAddressBit = IpUtil.addressNet(ipBit,maskBit);
+        this.netAddress = IpUtil.ipToString(netAddressBit);
+        this.broadcastAddressBit = IpUtil.addressBroadcast(netAddressBit,maskBit);
+        this.broadcastAddress =IpUtil.ipToString(broadcastAddressBit);
+        this.firstAddress = IpUtil.ipToString(IpUtil.firstAdr(netAddressBit));
+        this.lastAddress = IpUtil.ipToString(IpUtil.lastAdr(broadcastAddressBit));
+        if (maskBit ==0) {
+            this.numberOfAddresses = "4294967294";
+        }else {
+            this.numberOfAddresses = String.valueOf(broadcastAddressBit - IpUtil.ipToBits(firstAddress));
+        }
+        this.validIp = true;
+    }
+
+    public String getIp() {
+        return ip;
+    }
+
+
 
     public String getMask() {
         return mask;
     }
 
-    public void setMask(String mask) {
-        this.mask = mask;
-    }
+
 
     public String getNetAddress() {
         return netAddress;
     }
 
-    public void setNetAddress(String netAddress) {
-        this.netAddress = netAddress;
-    }
+
 
     public String getBroadcastAddress() {
         return broadcastAddress;
     }
 
-    public void setBroadcastAddress(String broadcastAddress) {
-        this.broadcastAddress = broadcastAddress;
-    }
+
 
     public String getFirstAddress() {
         return firstAddress;
     }
 
-    public void setFirstAddress(String firstAddress) {
-        this.firstAddress = firstAddress;
-    }
+
 
     public String getLastAddress() {
         return lastAddress;
     }
 
-    public void setLastAddress(String lastAddress) {
-        this.lastAddress = lastAddress;
+
+
+    public boolean isValidIp() {
+        return validIp;
     }
 
-    public static int ipToBits(String ipAdress)  //zamienia string zapisany w formacie xxx.xxx.xxx.xxx na binarnie w liczbie int
-    {
-        int IpBinTemp = 0;
-        String[] groups = ipAdress.trim().split("\\.");
-        if (groups.length == 4) {
-            for (String x : groups) {
-                IpBinTemp = IpBinTemp << 8;
-                IpBinTemp = IpBinTemp | Integer.parseInt(x);
-            }
-        }
-        return IpBinTemp;
+    public String getNumberOfAddresses() {
+        return numberOfAddresses;
     }
 
-    public static String ipToString(int ipBinTemp) // zamienia adres ip zapisany binarnie w int do postaci tekstu
-    {
-        int tempOctet = 0;
-        String ipString = "";
-        for (int i = 0; i < 25; i = i + 8) {
-            tempOctet = ipBinTemp << i;
-            tempOctet = tempOctet >>> 24;
-            ipString = ipString + Integer.toString(tempOctet);
-            if (i < 24) ipString = ipString + ".";
-        }
-        return ipString;
+    @Override
+    public String toString() {
+        return "IpAddress{" +
+                "ip='" + ip + '\'' +
+                ", mask='" + mask + '\'' +
+                ", netAddress='" + netAddress + '\'' +
+                ", broadcastAddress='" + broadcastAddress + '\'' +
+                ", firstAddress='" + firstAddress + '\'' +
+                ", lastAddress='" + lastAddress + '\'' +
+                ", numberOfAddresses='" + numberOfAddresses + '\'' +
+                ", validIp=" + validIp +
+                '}';
     }
 }

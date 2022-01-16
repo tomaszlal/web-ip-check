@@ -13,8 +13,8 @@ public class IpController {
     @Autowired
     IpService ipService;
 
-    @GetMapping("/ip/{ip}")
-    private IpAddress getInformation(@PathVariable("ip") String ip){
-        return ipService.getInfoOfAdrress(ip);
+    @GetMapping("/ip/{ip}/{mask}")
+    private IpAddress getInformation(@PathVariable("ip") String ip,@PathVariable("mask") String mask){
+        return ipService.getInfoOfAdrress(ip, mask);
     }
 }
