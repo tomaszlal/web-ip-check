@@ -31,16 +31,32 @@ public class IpAddress {
         this.maskBit = IpUtil.maskaSieciowaBin(Integer.parseInt(mask));
         this.mask = IpUtil.ipToString(maskBit);
         this.netAddressBit = IpUtil.addressNet(ipBit,maskBit);
-        this.netAddress = IpUtil.ipToString(netAddressBit);
+        this.netAddress = IpUtil.ipToString(netAddressBit)+"/"+mask;
         this.broadcastAddressBit = IpUtil.addressBroadcast(netAddressBit,maskBit);
         this.broadcastAddress =IpUtil.ipToString(broadcastAddressBit);
         this.firstAddress = IpUtil.ipToString(IpUtil.firstAdr(netAddressBit));
         this.lastAddress = IpUtil.ipToString(IpUtil.lastAdr(broadcastAddressBit));
-        if (maskBit ==0) {
-            this.numberOfAddresses = "4294967294";
-        }else {
-            this.numberOfAddresses = String.valueOf(broadcastAddressBit - IpUtil.ipToBits(firstAddress));
+        switch (Integer.parseInt(mask)){
+            case 0:
+                this.numberOfAddresses = "4294967294";
+                break;
+            case 31:
+                this.numberOfAddresses = "Sieć do adresacji punkt-punkt";
+                this.firstAddress = null;
+                this.lastAddress = null;
+                break;
+            case 32:
+                this.numberOfAddresses = "To jest pojedyńczy host, nie sieć";
+                this.firstAddress = null;
+                this.lastAddress = null;
+                this.netAddress = null;
+                this.broadcastAddress = null;
+                break;
+            default:
+                this.numberOfAddresses = String.valueOf(broadcastAddressBit - IpUtil.ipToBits(firstAddress));
+                break;
         }
+
         this.validIp = true;
     }
 
